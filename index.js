@@ -5,10 +5,8 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
         left: 60,
         right: 20
     },
-    w = window.innerWidth,
-    h = window.innerHeight,
-    width = w,
-    height = h,
+    width = window.innerWidth - (window.innerWidth * .3),
+    height = window.innerHeight - (window.innerHeight * .3),
     formatMonth = d3.timeFormat("%B"),
     formatYear = d3.timeFormat('%Y'),
     parseMonth = d3.timeParse("%m"),
@@ -18,14 +16,12 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
 
 var svg = d3.select('#chart')
     .append("svg")
-    .attr("height", height - margin.top - margin.bottom)
-    .attr("width", width - margin.left - margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width + margin.left + margin.right)
     .attr('id', "svg");
 
 var chart = svg
     .append("g")
-    .attr("height", height - (height / 2) + margin.top + margin.bottom)
-    .attr("width", width - (width / 2) + margin.left + margin.right)
 
 const x = d3.scaleTime().range([0, width]);
 const y = d3.scaleBand().range([height, 0]);
@@ -38,36 +34,20 @@ d3.json(url).then(function (data) {
         d.year = formatYear(parseYear(d.year));
     });
 
-x.domain(d3.extent(monthly, function(d){return d.year}));
+x.domain(d3.extent(monthly, function(d){return new Date(d.year)}));
 y.domain(month);
 
-/*     // gridlines in x axis function
-    function make_x_gridlines() {
-        return d3.axisBottom(xScale)
-            .ticks(263)
-            .tickFormat(d3.timeFormat("%Y"));
-    }
-
-    // gridlines in y axis function
-    function make_y_gridlines() {
-        return d3.axisLeft(yScale)
-            .tickFormat(month);
-    } */
-
-    // add the X gridlines
     chart.append("g")
         .attr("class", "grid")
-        .attr("transform", "translate(0," + height / 2 + ")")
+        .attr("transform", "translate(" + margin.left + ", " + height  + ")")
         .call(d3.axisBottom(x)
             .tickFormat(d3.timeFormat("%Y")))
 
     // add the Y gridlines
     chart.append("g")
         .attr("class", "grid")
-        .attr("transform", "translate(50, 0)")
-        .call(d3.axisLeft(y)
-            .tickFormat(d3.timeFormat(data.month))
-        );
+        .attr("transform", "translate(" + margin.left +  ", " + 0 + ")")
+        .call(d3.axisLeft(y))
 
  /*    chart.append('g')
         .attr("transform", "translate(0," + (height / 2) + ")")
