@@ -11,7 +11,9 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
     formatYear = d3.timeFormat('%Y'),
     parseMonth = d3.timeParse("%m"), //make into actual usuable format
     parseYear = d3.timeParse("%Y"),
-    month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; //needed for start and end point for y axis domain
+    month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], //needed for start and end point for y axis domain
+    colors = ["#1061B3" //dark blue , "#0000FF" darker blue "#0044FF" blue "#007BFF" blue "#00AAFF" light blue "#00FFC3" blue green "#00FF51" green "#26FF00" light green "#73FF00" green yellow "#FFFF00" // yellow "#FFD000" //yellow orange "#FF8800" //even lighter oranger, "#FF6200" lighter oranger "#FF4800" //dark orange "#FF0000" // dark red
+]; //colors for heat map
 
 
 //append svg to id chart
@@ -35,6 +37,12 @@ d3.json(url).then(function (data) {
         d.month = formatMonth(parseMonth(d.month)); //format json data into usable information
         d.year = formatYear(parseYear(d.year));
     });
+
+    const variance = data.forEach(key => {
+        console.log(data[variance]);
+     });
+
+    console.log(variance);
 
     x.domain(d3.extent(monthly, function (d) {
         return new Date(d.year)
