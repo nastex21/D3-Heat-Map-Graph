@@ -12,8 +12,10 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
     parseMonth = d3.timeParse("%m"), //make into actual usuable format
     parseYear = d3.timeParse("%Y"),
     month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], //needed for start and end point for y axis domain
-    colors = ["#1061B3" //dark blue , "#0000FF" darker blue "#0044FF" blue "#007BFF" blue "#00AAFF" light blue "#00FFC3" blue green "#00FF51" green "#26FF00" light green "#73FF00" green yellow "#FFFF00" // yellow "#FFD000" //yellow orange "#FF8800" //even lighter oranger, "#FF6200" lighter oranger "#FF4800" //dark orange "#FF0000" // dark red
-]; //colors for heat map
+    colors = ["#1061B3", "#0000FF", "#0044FF", "#007BFF", "#00AAFF", "#00FFC3", "#00FF51", "#26FF00", "#73FF00", "#FFFF00", "#FFD000", "#FF8800", "#FF6200", "#FF4800", "#FF0000"], //colors for heat map
+    varianceArr = [],  //store and separate variance keys and values
+    itemSize = 2,
+    cellSize = itemSize - 1;
 
 
 //append svg to id chart
@@ -32,31 +34,42 @@ const y = d3.scaleBand().range([height, 0]); //scale for months
 
 //grab json data from url
 d3.json(url).then(function (data) {
-    const monthly = data.monthlyVariance;
+    var monthly = data.monthlyVariance;
     monthly.forEach(function (d) {
         d.month = formatMonth(parseMonth(d.month)); //format json data into usable information
         d.year = formatYear(parseYear(d.year));
     });
 
-    const variance = data.forEach(key => {
-        console.log(data[variance]);
-     });
+    monthly.forEach(function(key){
+        varianceArr.push(key.variance);
+    })
 
-    console.log(variance);
+    var colorScale = d3.scaleThreshold()
+        .domain(d3.extent(varianceArr))
+        .range(colors);
 
     x.domain(d3.extent(monthly, function (d) {
         return new Date(d.year)
     }));
     y.domain(month);
 
+    chart.selectAll('rect')
+        .data(monthly)
+        .enter().append('g').append('rect')
+        .attr('class', 'cell')
+        .attr('width', cellSize)
+        .attr('height', cellSize)
+        .attr('y', function(d){return x(d.year)})
+        .attr('x', function(d){return y(d.month)})
+        .attr('fill', function(d){return colorScale(d.variance)})
+
     chart.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(" + margin.left + ", " + (height + margin.top) + ")")
         .call(d3.axisBottom(x)
             .tickFormat(d3.timeFormat("%Y"))
-            .ticks(20))
+            .ticks(width <= 600 ? 15 : 20))
 
-    // add the Y gridlines
     chart.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
