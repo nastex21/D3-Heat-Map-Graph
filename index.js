@@ -5,7 +5,7 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
         left: 60,
         right: 20
     }, //margins to use for chart
-    width = 500;//window.innerWidth - (window.innerWidth * .3), get the width of the window and subtract the window width  times 30 percent so the width won't reach all the way to the end
+    width = window.innerWidth - (window.innerWidth * .3);//window.innerWidth - (window.innerWidth * .3), get the width of the window and subtract the window width  times 30 percent so the width won't reach all the way to the end
     height = window.innerHeight - (window.innerHeight * .3);//window.innerHeight - (window.innerHeight * .3), get the height of the window minus the window height and 30%
     formatMonth = d3.timeFormat("%B"), //format month
     formatYear = d3.timeFormat('%Y'),
@@ -14,8 +14,10 @@ var url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/m
     month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], //needed for start and end point for y axis domain
     colors = ["#1061B3", "#0000FF",  "#00FFC3", "#00FF51", "#26FF00", "#73FF00", "#FFFF00", "#FFD000", "#FF8800", "#FF6200", "#FF4800", "#FF0000"], //colors for heat map
     varianceArr = [],  //store and separate variance keys and values
-    heightCellSize = (height / 12 + (height / 80)),
-    widthCellSize = (width / 262)
+    rows = 12;
+    columns = (2015 - 1753) //data... years start in 1753 and end in 2015
+    heightCellSize = (height / rows),
+    widthCellSize = (width / columns)
 
 
 //append svg to id chart
@@ -69,19 +71,17 @@ d3.json(url).then(function (data) {
         .attr('x', function(d){ return x(new Date(d.year)) + 60})
         .attr('y', function(d){ return y(d.month) + 42})
         .attr('fill', function(d){return colorScale(d.variance)})
-
-    console.log(x(2015))
-
+        
     chart.append("g")
         .attr("class", "grid")
-        .attr("transform", "translate(" + margin.left + ", " + (height + margin.top) + ")")
+        .attr("transform", "translate(" + margin.left + ", " + (height + (margin.top - 8)) + ")")
         .call(d3.axisBottom(x)
             .tickFormat(d3.timeFormat("%Y"))
             .ticks(width <= 600 ? 15 : 20))
 
     chart.append("g")
         .attr("class", "grid")
-        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+        .attr("transform", "translate(" + margin.left + ", " + (margin.top + -8) + ")")
         .call(d3.axisLeft(y))
 
 })
